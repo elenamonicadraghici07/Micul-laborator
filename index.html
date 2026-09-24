@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#4f46a5">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Micul Laborator 3.0</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--ink:#202536;--muted:#697083;--accent:#5b55c8;--line:#e6e7ef;--ok:#18775f;--warm:#fff6db}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);touch-action:manipulation}
+body{padding-bottom:env(safe-area-inset-bottom)}
+header{padding:20px 16px 14px;background:linear-gradient(135deg,#e9e8ff,#fff);border-bottom:1px solid var(--line)}
+h1{margin:0;font-size:25px}header p{margin:5px 0 0;color:var(--muted)}
+main{max-width:850px;margin:auto;padding:14px 12px 85px}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;position:sticky;top:0;z-index:5;background:#f6f7fbeF;padding:6px 0;backdrop-filter:blur(8px)}
+button{appearance:none;-webkit-appearance:none;border:0;border-radius:12px;padding:11px 10px;font-weight:750;background:#e9e9f4;color:#30324a;min-height:44px;cursor:pointer}
+button.active,.primary{background:var(--accent);color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:15px;margin:11px 0;box-shadow:0 3px 13px #1111}
+.card.warm{background:var(--warm)}
+h2{font-size:19px;margin:0 0 9px}h3{font-size:16px;margin:4px 0 7px}
+.small{font-size:12px;color:var(--muted);line-height:1.4}.tag{display:inline-block;background:#efeffb;padding:5px 8px;border-radius:99px;margin:2px;font-size:11px}
+.hidden{display:none}.game{padding:12px 0;border-top:1px solid var(--line)}.game:first-child{border-top:0}
+.row{display:flex;gap:7px;flex-wrap:wrap}.row>*{flex:1}
+textarea,select{width:100%;padding:10px;border:1px solid #d7d9e2;border-radius:10px;font:inherit;background:#fff;margin:5px 0 9px}
+.timer{text-align:center;font-size:38px;font-weight:850;margin:10px}.progress{height:11px;background:#e9eaf1;border-radius:99px;overflow:hidden}.progress div{height:100%;background:var(--ok)}
+.day{padding:10px;border:1px solid var(--line);border-radius:11px;margin:7px 0}.done{background:#edf9f5;border-color:#bee5d8}
+.script{padding:10px;border-left:4px solid var(--accent);background:#f5f4ff;border-radius:7px;margin:7px 0}
+.choice{display:grid;grid-template-columns:1fr 1fr;gap:7px}.choice button{font-size:13px}
+footer{position:fixed;bottom:0;left:0;right:0;background:#ffffffed;border-top:1px solid var(--line);padding:7px;text-align:center;font-size:11px;color:var(--muted);z-index:8}
+@media(max-width:600px){.tabs{grid-template-columns:repeat(2,1fr)}h1{font-size:22px}}
+</style>
+</head>
+<body>
+<header><h1>🔬 Micul Laborator 3.0</h1><p>Calm • autocontrol • flexibilitate • limite corporale • obiceiuri sigure</p></header>
+<main>
+<div class="tabs">
+<button class="tab active" data-tab="today">⭐ Azi</button>
+<button class="tab" data-tab="body">🤝 Corp & acord</button>
+<button class="tab" data-tab="plan">🗓 Plan</button>
+<button class="tab" data-tab="parent">🧭 Părinte</button>
+</div>
+
+<section id="today">
+<div class="card">
+<h2>🧠 Activarea laboratorului</h2><div id="activation"></div>
+<div class="row"><button id="otherAct">↻ Alt exercițiu</button><button class="primary" id="actDone">✓ Făcut</button></div>
+</div>
+<div class="card"><h2>⭐ Misiunea zilei</h2><div id="mission"></div>
+<div class="timer" id="timer">05:00</div>
+<div class="row"><button class="primary" id="start">▶ Pornește</button><button id="pause">Pauză</button><button id="resetTimer">Reset</button></div></div>
+<div class="card"><h2>După misiune</h2>
+<label>Cum a fost?</label><select id="rating"><option>Ușor</option><option selected>Potrivit</option><option>Greu</option><option>Foarte greu</option></select>
+<label>Cât ajutor?</label><select id="help"><option>Deloc</option><option selected>Puțin</option><option>Mult</option></select>
+<textarea id="note" placeholder="Observație scurtă..."></textarea><button class="primary" id="save">✓ Salvează</button></div>
+</section>
+
+<section id="body" class="hidden">
+<div class="card warm"><h2>🤝 Regula laboratorului</h2>
+<div class="script"><b>„Corpul meu este al meu. Corpul tău este al tău. Întreb înainte să ating.”</b></div>
+<p>Chiar dacă îmi este foarte drag de cineva, întâi întreb. Dacă spune „nu”, „nu acum”, se retrage sau pare inconfortabil, mă opresc. Nu trebuie să conving persoana.</p>
+</div>
+<div class="card"><h2>🎮 Jocuri: spațiu personal și acord</h2><div id="consentGames"></div></div>
+<div class="card"><h2>✏️ Obiectele nu intră în gură</h2><div id="mouthGames"></div></div>
+</section>
+
+<section id="plan" class="hidden">
+<div class="card"><h2>🗓 Plan de 4 săptămâni</h2><p class="small">10–20 minute, aproximativ 5 zile/săptămână. Noile misiuni de limite corporale și obiecte în gură sunt distribuite pe tot planul.</p>
+<div class="progress"><div id="bar"></div></div><p class="small" id="progressText"></p><div id="planList"></div></div>
+<div class="card"><h2>🎲 Toate jocurile</h2><div id="allGames"></div></div>
+</section>
+
+<section id="parent" class="hidden">
+<div class="card"><h2>🧭 Limbaj consecvent</h2>
+<div class="script">„Îți place mult de el/ea. Arată-i întâi prin cuvinte. Dacă vrei o îmbrățișare, întreabă: «Pot să te îmbrățișez?»”</div>
+<div class="script">„A spus nu / corpul lui s-a retras. Asta înseamnă stop. Poți spune «Mă bucur să te văd!» sau poți face cu mâna.”</div>
+<div class="script">„Îmbrățișarea a fost prea puternică. Când cineva spune «mai încet» sau «stop», slăbim imediat și ne oprim.”</div>
+<p class="small">Exersați acestea în joacă atunci când este calm. Nu transformați afecțiunea în ceva „rău”; regula este că afecțiunea fizică trebuie să fie dorită de ambele persoane.</p>
+</div>
+<div class="card"><h2>✏️ Creion/gumă în gură</h2>
+<p>Folosiți o intervenție scurtă și neutră: <b>„Creionul jos din gură. Ce alegi pentru mâini?”</b> Evitați discursurile lungi sau rușinarea.</p>
+<p>Înainte de teme, puneți la îndemână o alternativă pentru mâini (de exemplu o bilă antistres/fidget potrivit vârstei), apă și o scurtă pauză de mișcare. Nu înlocuiți creionul cu obiecte mici sau improvizate pentru mestecat, care pot prezenta risc de înec.</p>
+<p class="small">Dacă mestecarea obiectelor este frecventă, greu de oprit, deteriorează obiectele, implică înghițirea unor materiale sau apare împreună cu alte comportamente senzoriale marcate, merită discutat cu pediatrul/terapeutul ocupațional.</p>
+</div>
+<div class="card"><h2>📝 Jurnal</h2><div id="journal"></div></div>
+<div class="card"><h2>💾 Date</h2><div class="row"><button id="export">Exportă jurnal</button><button id="clear">Șterge progres</button></div></div>
+</section>
+</main>
+<footer>Instrument de joacă și exersare în familie — nu înlocuiește o evaluare profesională.</footer>
+
+<script>
+const activations=[
+["Respirația 4–6","Calm","Inspiră confortabil 4 secunde, expiră lent 6 secunde. 5 cicluri."],
+["Oglinda","Atenție + control","Unul face mișcări lente, celălalt le copiază. Schimbați rolurile."],
+["Ritm–Stop","Inhibiție","Copiază ritmul din palme; la palma ridicată se oprește imediat."],
+["Marș încrucișat","Coordonare","Mâna dreaptă la genunchiul stâng și invers, 30–45 secunde."],
+["Mișcare rapidă → lentă","Reglare","20 secunde energic, 20 secunde foarte lent, apoi 10 secunde nemișcat."]
+];
+
+const baseGames=[
+["Statuia cu telecomandă","Autocontrol","Mișcare liberă; la PAUZĂ corpul îngheață. Crește treptat timpul."],
+["Simon spune – cu capcane","Inhibiție","Folosiți reguli care cer să oprească primul impuls și să asculte până la capăt."],
+["Plan A, Plan B, Plan C","Flexibilitate","Pentru o schimbare inventați trei soluții posibile."],
+["Experimentul care trebuie să eșueze","Greșeli","Faceți predicții și tratați rezultatul neașteptat ca informație nouă."],
+["Robotul cu memorie","Memorie de lucru","Execută 1–4 instrucțiuni în ordine, apoi schimbați rolurile."],
+["Joc scurt de pierdut","Frustrare","Jucați un joc scurt și exersați revenirea după pierdere."]
+];
+
+const consentGames=[
+["Semaforul atingerii","Acord + inhibiție","Folosiți figurine. VERDE = persoana a spus clar «da». GALBEN = nu știm, deci întrebăm. ROȘU = «nu», retragere sau disconfort: stop. Prezentați 8–10 situații."],
+["Pot să te îmbrățișez?","Cererea acordului","Faceți joc de rol. Copilul spune «Mă bucur să te văd! Pot să te îmbrățișez?». Adultul răspunde pe rând da / nu / nu acum. La «nu», copilul exersează «OK!» și alege salut verbal, făcut cu mâna sau high-five doar dacă și acesta este acceptat."],
+["Îmbrățișarea fulg","Forța atingerii","Doar după un «da» clar, exersați o îmbrățișare blândă, scurtă. Adultul poate spune «mai încet» sau «stop», iar copilul slăbește/oprește imediat. Scopul nu este să măsoare forța, ci să răspundă la feedback."],
+["Drag prin cuvinte","Afecțiune fără atingere","Trageți cartonașe cu persoane imaginare. Spune o propoziție: «Mă bucur să te văd», «Îmi place să mă joc cu tine», «Ești un prieten bun», «Mi-a fost dor de tine». Nicio atingere nu este necesară."],
+["Detectivul spațiului personal","Distanță","Cu figurine, comparați «prea aproape / confortabil / prea departe». Observați că distanța confortabilă diferă de la persoană la persoană."],
+["Stop înseamnă stop","Respectarea limitei","Într-un joc de mișcare, oricare spune STOP și celălalt se oprește imediat. Apoi spuneți «Mulțumesc că te-ai oprit». Schimbați rolurile."],
+["Salutul cu opțiuni","Alternative","Înainte de a întâlni pe cineva, alegeți trei variante: «Bună!», făcut cu mâna, sau întrebarea pentru o îmbrățișare. Copilul trebuie să înceapă cu o variantă fără atingere sau cu o întrebare."]
+];
+
+const mouthGames=[
+["Creionul are parcare","Obicei sigur","Stabiliți o «parcare» pe masă. Când nu scrie, creionul merge în parcare, nu la gură. Faceți 10 runde scurte: scriu → parchez → mâinile pe masă."],
+["Prinde impulsul","Autocontrol","Adultul mimează ducerea creionului spre gură. Copilul spune «STOP – parcare!». Apoi schimbați rolurile. Scopul este să observe mișcarea înainte să devină automată."],
+["Mâini ocupate","Înlocuire","Într-o sarcină de ascultare, mâna liberă ține un obiect sigur de manipulat potrivit vârstei. La scris, obiectul revine în cutie și creionul este folosit doar pentru scris."],
+["Bifa de 5 minute","Conștientizare","Setați 5 minute de activitate. Obiectivul este «creionul rămâne în afara gurii». La final bifați doar dacă și-a amintit sau s-a corectat când a observat; creșteți lent intervalul."],
+["Apă – mișcare – lucru","Reglare","Înainte de o sarcină plictisitoare: câteva înghițituri de apă, 30 secunde de mișcare, apoi lucru. Observați dacă nevoia de a duce obiecte la gură scade."]
+];
+
+const schedule=[
+["Săpt. 1 – Frână + corpul meu/corpul tău",["Statuia cu telecomandă","Pot să te îmbrățișez?","Creionul are parcare","Semaforul atingerii","Robotul cu memorie"]],
+["Săpt. 2 – Spațiu + alternative",["Detectivul spațiului personal","Drag prin cuvinte","Prinde impulsul","Salutul cu opțiuni","Plan A, Plan B, Plan C"]],
+["Săpt. 3 – Stop + reglare",["Stop înseamnă stop","Îmbrățișarea fulg","Mâini ocupate","Joc scurt de pierdut","Bifa de 5 minute"]],
+["Săpt. 4 – Transfer în viața reală",["Pot să te îmbrățișez?","Salutul cu opțiuni","Apă – mișcare – lucru","Semaforul atingerii","Experimentul care trebuie să eșueze"]]
+];
+
+const all=[...baseGames,...consentGames,...mouthGames];
+let data; try{data=JSON.parse(localStorage.getItem("mlab3"))||{done:[],journal:[]}}catch(e){data={done:[],journal:[]}}
+let act=0,sec=300,tick=null;
+const $=x=>document.getElementById(x);
+function findGame(n){return all.find(g=>g[0]===n)}
+function idx(){return Math.min(data.done.length,19)}
+function mission(){let i=idx(),w=Math.floor(i/5),d=i%5;return {i,w,d,n:schedule[w][1][d]}}
+function saveLocal(){try{localStorage.setItem("mlab3",JSON.stringify(data))}catch(e){}}
+function renderActivation(){let a=activations[act%activations.length];$("activation").innerHTML=`<h3>${a[0]}</h3><span class="tag">${a[1]}</span><p>${a[2]}</p>`}
+function renderMission(){let m=mission(),g=findGame(m.n);$("mission").innerHTML=`<h3>${g[0]}</h3><span class="tag">${g[1]}</span><p>${g[2]}</p><p class="small">Săptămâna ${m.w+1}, ziua ${m.d+1}</p>`}
+function renderGames(id,list){$(id).innerHTML=list.map(g=>`<div class="game"><h3>${g[0]}</h3><span class="tag">${g[1]}</span><p>${g[2]}</p></div>`).join("")}
+function renderPlan(){let h="",i=0;schedule.forEach((w,wi)=>{h+=`<h3>${w[0]}</h3>`;w[1].forEach((n,di)=>{let d=data.done.includes(i);h+=`<div class="day ${d?"done":""}">${d?"✓ ":""}<b>Ziua ${di+1}:</b> ${n}</div>`;i++})});$("planList").innerHTML=h;let n=Math.min(data.done.length,20);$("bar").style.width=(n/20*100)+"%";$("progressText").textContent=`${n} din 20 misiuni completate`}
+function renderJournal(){$("journal").innerHTML=data.journal.length?data.journal.slice().reverse().map(x=>`<div class="day"><b>${x.date} — ${x.game}</b><br><span class="small">${x.rating}; ajutor: ${x.help}</span><br>${x.note||"Fără observații."}</div>`).join(""):"<p class='small'>Nu există încă înregistrări.</p>"}
+function renderAll(){renderActivation();renderMission();renderGames("consentGames",consentGames);renderGames("mouthGames",mouthGames);renderGames("allGames",all);renderPlan();renderJournal()}
+document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");["today","body","plan","parent"].forEach(id=>$(id).classList.toggle("hidden",id!==b.dataset.tab))}));
+$("otherAct").addEventListener("click",()=>{act=(act+1)%activations.length;renderActivation()});
+$("actDone").addEventListener("click",()=>{let a=activations[act%activations.length];data.journal.push({date:new Date().toLocaleDateString("ro-RO"),game:"Activare: "+a[0],rating:"Făcut",help:"—",note:""});saveLocal();renderJournal()});
+function show(){let m=Math.floor(sec/60),s=sec%60;$("timer").textContent=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0")}
+$("start").addEventListener("click",()=>{if(!tick)tick=setInterval(()=>{sec--;show();if(sec<=0){clearInterval(tick);tick=null;sec=0;show()}},1000)});
+$("pause").addEventListener("click",()=>{clearInterval(tick);tick=null});
+$("resetTimer").addEventListener("click",()=>{clearInterval(tick);tick=null;sec=300;show()});
+$("save").addEventListener("click",()=>{let m=mission();if(!data.done.includes(m.i))data.done.push(m.i);data.journal.push({date:new Date().toLocaleDateString("ro-RO"),game:m.n,rating:$("rating").value,help:$("help").value,note:$("note").value});$("note").value="";saveLocal();renderAll();alert("Misiunea a fost salvată ⭐")});
+$("export").addEventListener("click",()=>{let blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="micul-laborator-jurnal.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)});
+$("clear").addEventListener("click",()=>{if(confirm("Ștergi progresul și jurnalul?")){data={done:[],journal:[]};saveLocal();renderAll()}});
+if("serviceWorker"in navigator&&(location.protocol==="https:"||location.hostname==="localhost"))navigator.serviceWorker.register("./sw.js").catch(()=>{});
+renderAll();show();
+</script>
+</body></html>
